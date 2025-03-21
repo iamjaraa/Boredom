@@ -1,0 +1,53 @@
+name: Flutter CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]  # Trigger the workflow on the 'main' branch
+  pull_request:
+    branches: [main]  # Trigger the workflow on pull requests to 'main' branch
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest  # Android build on Ubuntu
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3  # Check out the repository
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.31.0-0.1.pre'  # Specify the exact Flutter version
+          channel: 'beta'  # Specify the Flutter beta channel
+
+      - name: Install Dependencies
+        run: flutter pub get  # Install dependencies
+
+      - name: Run Tests
+        run: flutter test --verbose  # Run tests with verbose logging
+
+      - name: Build APK
+        run: flutter build apk --release  # Build the APK in release mode
+
+  build-macOS:
+    runs-on: macOS-latest  # macOS build on macOS-latest runner
+    needs: build-android  # Ensure Android build runs first (optional)
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3  # Check out the repository
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.31.0-0.1.pre'  # Specify the exact Flutter version
+          channel: 'beta'  # Specify the Flutter beta channel
+
+      - name: Install Dependencies
+        run: flutter pub get  # Install dependencies
+
+      - name: Run Tests
+        run: flutter test --verbose  # Run tests with verbose logging
+
+      - name: Build macOS
+        run: flutter build macos --release --verbose  # Build the macOS version in release mode
