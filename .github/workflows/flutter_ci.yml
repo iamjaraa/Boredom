@@ -15,6 +15,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Ensure full history is pulled
+          submodules: true  # Ensures submodules are pulled
+
+      - name: Debug - Print Working Directory
+        run: pwd
 
       - name: Debug - List Files
         run: ls -la  # Print directory structure to check pubspec.yaml
@@ -44,6 +48,10 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          submodules: true
+
+      - name: Debug - Print Working Directory
+        run: pwd
 
       - name: Debug - List Files
         run: ls -la  # Print directory structure
