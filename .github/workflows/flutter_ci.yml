@@ -2,52 +2,64 @@ name: Flutter CI/CD Pipeline
 
 on:
   push:
-    branches: [main]  # Trigger the workflow on the 'main' branch
+    branches: [main]  # Trigger on main branch
   pull_request:
-    branches: [main]  # Trigger the workflow on pull requests to 'main' branch
+    branches: [main]  # Trigger on pull requests to main
 
 jobs:
   build-android:
-    runs-on: ubuntu-latest  # Android build on Ubuntu
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3  # Check out the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # Ensure full history is pulled
+
+      - name: Debug - List Files
+        run: ls -la  # Print directory structure to check pubspec.yaml
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.31.0-0.1.pre'  # Specify the exact Flutter version
-          channel: 'beta'  # Specify the Flutter beta channel
+          flutter-version: '3.31.0-0.1.pre'
+          channel: 'beta'
 
       - name: Install Dependencies
-        run: flutter pub get  # Install dependencies
+        run: flutter pub get
+        working-directory: .  # Explicitly set project root
 
       - name: Run Tests
-        run: flutter test --verbose  # Run tests with verbose logging
+        run: flutter test --verbose
 
       - name: Build APK
-        run: flutter build apk --release  # Build the APK in release mode
+        run: flutter build apk --release
 
   build-macOS:
-    runs-on: macOS-latest  # macOS build on macOS-latest runner
-    needs: build-android  # Ensure Android build runs first (optional)
+    runs-on: macOS-latest
+    needs: build-android  # Ensure Android build completes first
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3  # Check out the repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Debug - List Files
+        run: ls -la  # Print directory structure
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.31.0-0.1.pre'  # Specify the exact Flutter version
-          channel: 'beta'  # Specify the Flutter beta channel
+          flutter-version: '3.31.0-0.1.pre'
+          channel: 'beta'
 
       - name: Install Dependencies
-        run: flutter pub get  # Install dependencies
+        run: flutter pub get
+        working-directory: .  # Explicitly set project root
 
       - name: Run Tests
-        run: flutter test --verbose  # Run tests with verbose logging
+        run: flutter test --verbose
 
       - name: Build macOS
-        run: flutter build macos --release --verbose  # Build the macOS version in release mode
+        run: flutter build macos --release --verbose
